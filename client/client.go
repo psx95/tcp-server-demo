@@ -35,6 +35,7 @@ func main() {
 }
 
 func issueSimpleGetRequest(serverAddress string) {
+	defer wg.Done()
 	// Construct HTTP GET request
 	req, err := http.NewRequest("GET", serverAddress, nil)
 	if err != nil {
@@ -44,13 +45,14 @@ func issueSimpleGetRequest(serverAddress string) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Printf("unable to send request to server: %v", err)
+		return
 	}
 	defer resp.Body.Close() // Close reader for response
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Printf("unable to read response: %v\n", err)
+		return
 	}
 	fmt.Printf("response received: %v\n", string(body))
-	wg.Done()
 }
