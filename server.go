@@ -9,6 +9,12 @@ import (
 	netutil "golang.org/x/net/netutil"
 )
 
+// Potential enhancements:
+// 1. Limit number of threads created by server
+// 2. Add thread pool
+// 3. Connection timeout
+// 4. Configure tcp backlog configuration
+
 func main() {
 	log.Println("Starting server")
 	// STEP 1: Make the server listen to a particular port
