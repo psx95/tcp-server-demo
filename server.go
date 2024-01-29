@@ -5,33 +5,41 @@ import (
 	"log"
 	"net"
 	"time"
+
+	netutil "golang.org/x/net/netutil"
 )
 
 func main() {
+	log.Println("Starting server")
 	// STEP 1: Make the server listen to a particular port
 	listener, err := net.Listen("tcp", ":1234") // blocking call
 	if err != nil {
 		log.Fatalf("Error encountered while attempting to listen: %v", err)
 	}
+	listener = netutil.LimitListener(listener, 100)
 	fmt.Printf("Listener obj :%v\n", listener)
 	handleClients(listener)
 	fmt.Println("Exiting server")
+	defer listener.Close()
 }
 
 func handleClients(listener net.Listener) {
 	for {
+		log.Println("Waiting for Client")
 		// STEP 2: Allow server to accept the incoming connections from clients
 		conn, err := listener.Accept() // blocking call
 		if err != nil {
 			log.Fatalf("Unable to accept connection from client: %v", err)
 		}
-		fmt.Printf("Accepted connection from client :%v\n", conn.LocalAddr())
-
+		log.Println("Processing request")
 		go doWork(conn)
 	}
 }
 
 func doWork(con net.Conn) {
+	defer func() {
+		log.Println("Request completed")
+	}()
 	// Buffer to store the request
 	connBuffer := make([]byte, 2048)
 
